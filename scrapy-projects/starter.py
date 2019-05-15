@@ -4,6 +4,7 @@ import sys
 import os
 from logging.handlers import RotatingFileHandler
 import logging
+import importlib
 
 from scrapy.settings import Settings
 from scrapy.spiderloader import SpiderLoader
@@ -17,6 +18,7 @@ def set_logger(settings):
     log_level = settings['LOG_LEVEL']
 
     if settings["LOG_DIR"]:
+        logging.info(settings["LOG_DIR"])
         logdir = settings['LOG_DIR']
         if not os.path.exists(logdir):
             os.mkdir(logdir)
@@ -33,12 +35,10 @@ def load_conf(module_name, env=''):
     conf_path = 'mods.%s.settings' % module_name
     if env:
         conf_path += '_' + env
-    print(conf_path)
-    import importlib
     module = importlib.import_module(conf_path)
     settings = Settings()
     settings.setmodule(module)
-
+    set_logger(settings)
     return settings
 
 
